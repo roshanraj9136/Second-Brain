@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Plus, Trash2, FileText, Search, Folder, FolderOpen, LayoutGrid, Settings, ChevronRight, ChevronDown, AlertCircle, X } from "lucide-react";
+import { Plus, Trash2, FileText, Search, Folder, FolderOpen, LayoutGrid, Settings, ChevronRight, ChevronDown, AlertCircle, X, PanelLeftClose } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { isToday, isYesterday } from "date-fns";
@@ -26,6 +26,8 @@ interface SidebarProps {
   user: any;
   isOpen: boolean;
   onClose: () => void;
+  isDesktopOpen: boolean;
+  onDesktopToggle: () => void;
 }
 
 export default function Sidebar({
@@ -41,7 +43,9 @@ export default function Sidebar({
   onDeleteFolder,
   user,
   isOpen,
-  onClose
+  onClose,
+  isDesktopOpen,
+  onDesktopToggle
 }: SidebarProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [isFolderOpen, setIsFolderOpen] = useState(true);
@@ -156,11 +160,14 @@ export default function Sidebar({
     )}
 
     <div className={cn(
-        "fixed inset-y-0 left-0 z-50 w-80 border-r border-zinc-200 dark:border-zinc-800 h-[100dvh] flex flex-col bg-zinc-50/95 dark:bg-black/95 backdrop-blur-xl transition-transform duration-300 md:relative md:translate-x-0 shadow-2xl md:shadow-none",
-        isOpen ? "translate-x-0" : "-translate-x-full"
+        "fixed inset-y-0 left-0 z-50 border-r border-zinc-200 dark:border-zinc-800 h-[100dvh] flex flex-col bg-zinc-50/95 dark:bg-black/95 backdrop-blur-xl transition-all duration-300 ease-in-out shadow-2xl md:shadow-none",
+        "md:relative md:translate-x-0",
+        isOpen ? "translate-x-0 w-80" : "-translate-x-full w-80",
+        "md:transform-none", 
+        isDesktopOpen ? "md:w-80 md:opacity-100" : "md:w-0 md:opacity-0 md:overflow-hidden md:border-none"
     )}>
       
-      <div className="p-6 space-y-6 flex-shrink-0">
+      <div className="p-6 space-y-6 flex-shrink-0 whitespace-nowrap">
         <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 font-bold text-xl tracking-tight px-1 text-zinc-800 dark:text-zinc-100">
             <div className="w-8 h-8 bg-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20">
@@ -168,8 +175,13 @@ export default function Sidebar({
             </div>
             Second Brain
             </div>
+            
             <Button variant="ghost" size="icon" className="md:hidden text-zinc-500" onClick={onClose}>
                 <X className="w-6 h-6" />
+            </Button>
+
+            <Button variant="ghost" size="icon" className="hidden md:flex text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100" onClick={onDesktopToggle}>
+                <PanelLeftClose className="w-5 h-5" />
             </Button>
         </div>
 
@@ -193,7 +205,7 @@ export default function Sidebar({
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-hidden">
+      <div className="flex-1 min-h-0 overflow-hidden whitespace-nowrap">
         <ScrollArea className="h-full px-4">
           <div className="mb-8">
             <div className="flex items-center justify-between px-1 mb-3 group">
@@ -342,7 +354,7 @@ export default function Sidebar({
         </ScrollArea>
       </div>
 
-      <div className="p-6 border-t border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50 flex-shrink-0">
+      <div className="p-6 border-t border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50 flex-shrink-0 whitespace-nowrap">
         <Dialog>
           <DialogTrigger asChild>
             <div className="flex items-center justify-between group cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800 p-3 -m-3 rounded-2xl transition-colors">
@@ -381,7 +393,7 @@ export default function Sidebar({
               <div className="flex items-center justify-between p-4 rounded-lg border border-zinc-200 dark:border-zinc-800">
                 <div className="space-y-0.5">
                   <div className="text-sm font-medium">App Version</div>
-                  <div className="text-xs text-zinc-500">Pro v2.0 Mobile</div>
+                  <div className="text-xs text-zinc-500">Pro v2.1 Mobile</div>
                 </div>
                 <Button variant="secondary" disabled>Up to date</Button>
               </div>
