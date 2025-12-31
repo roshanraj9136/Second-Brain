@@ -16,7 +16,9 @@ export default function Home() {
   const [user, setUser] = useState<any>(null);
   const [activeFolder, setActiveFolder] = useState<string>("All Notes");
   const [customFolders, setCustomFolders] = useState<string[]>(["Personal", "Work", "Ideas"]);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isDesktopSidebarOpen, setIsDesktopSidebarOpen] = useState(true);
 
   const fetchNotes = async () => {
     const { data } = await supabase
@@ -92,6 +94,14 @@ export default function Home() {
     localStorage.setItem("customFolders", JSON.stringify(customFolders));
   }, [customFolders]);
 
+  const handleToggle = () => {
+    if (window.innerWidth < 768) {
+      setIsMobileSidebarOpen(true);
+    } else {
+      setIsDesktopSidebarOpen(!isDesktopSidebarOpen);
+    }
+  };
+
   return (
     <main className="flex min-h-screen bg-zinc-50 dark:bg-black text-[16px]">
       <CommandMenu 
@@ -112,22 +122,25 @@ export default function Home() {
         onCreateFolder={handleCreateFolder}
         onDeleteFolder={handleDeleteFolder}
         user={user}
-        isOpen={isSidebarOpen}
-        onClose={() => setIsSidebarOpen(false)}
+        isOpen={isMobileSidebarOpen}
+        onClose={() => setIsMobileSidebarOpen(false)}
+        isDesktopOpen={isDesktopSidebarOpen}
+        onDesktopToggle={() => setIsDesktopSidebarOpen(!isDesktopSidebarOpen)}
       />
       
       <div className="flex-1 h-screen overflow-hidden relative flex flex-col">
-        {/* Mobile Menu Trigger */}
-        <div className="md:hidden absolute top-4 left-4 z-30">
-            <Button 
-                variant="outline" 
-                size="icon" 
-                className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md shadow-sm rounded-full h-10 w-10 border-zinc-200 dark:border-zinc-800"
-                onClick={() => setIsSidebarOpen(true)}
-            >
-                <Menu className="w-5 h-5 text-zinc-700 dark:text-zinc-300" />
-            </Button>
-        </div>
+        {(!isDesktopSidebarOpen || typeof window !== 'undefined' && window.innerWidth < 768) && (
+          <div className="absolute top-4 left-4 z-30">
+              <Button 
+                  variant="outline" 
+                  size="icon" 
+                  className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md shadow-sm rounded-full h-10 w-10 border-zinc-200 dark:border-zinc-800"
+                  onClick={handleToggle}
+              >
+                  <Menu className="w-5 h-5 text-zinc-700 dark:text-zinc-300" />
+              </Button>
+          </div>
+        )}
 
         {!selectedNote && !isNewNote ? (
           <Dashboard 
