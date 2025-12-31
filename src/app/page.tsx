@@ -6,6 +6,8 @@ import Editor from "@/components/editor";
 import Sidebar from "@/components/sidebar";
 import Dashboard from "@/components/dashboard";
 import { CommandMenu } from "@/components/command-menu";
+import { Button } from "@/components/ui/button";
+import { Menu } from "lucide-react";
 
 export default function Home() {
   const [notes, setNotes] = useState<any[]>([]);
@@ -14,6 +16,7 @@ export default function Home() {
   const [user, setUser] = useState<any>(null);
   const [activeFolder, setActiveFolder] = useState<string>("All Notes");
   const [customFolders, setCustomFolders] = useState<string[]>(["Personal", "Work", "Ideas"]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const fetchNotes = async () => {
     const { data } = await supabase
@@ -109,9 +112,23 @@ export default function Home() {
         onCreateFolder={handleCreateFolder}
         onDeleteFolder={handleDeleteFolder}
         user={user}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
       />
       
       <div className="flex-1 h-screen overflow-hidden relative flex flex-col">
+        {/* Mobile Menu Trigger */}
+        <div className="md:hidden absolute top-4 left-4 z-30">
+            <Button 
+                variant="outline" 
+                size="icon" 
+                className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md shadow-sm rounded-full h-10 w-10 border-zinc-200 dark:border-zinc-800"
+                onClick={() => setIsSidebarOpen(true)}
+            >
+                <Menu className="w-5 h-5 text-zinc-700 dark:text-zinc-300" />
+            </Button>
+        </div>
+
         {!selectedNote && !isNewNote ? (
           <Dashboard 
             notes={notes} 
