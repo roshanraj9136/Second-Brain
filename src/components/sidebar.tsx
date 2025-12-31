@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Plus, Trash2, FileText, Search, Folder, FolderOpen, LayoutGrid, Settings, ChevronRight, ChevronDown, AlertCircle, X, PanelLeftClose } from "lucide-react";
+import { Plus, Trash2, FileText, Search, Folder, FolderOpen, LayoutGrid, Settings, ChevronRight, ChevronDown, AlertCircle, X, PanelLeftClose, Sun, Moon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { isToday, isYesterday } from "date-fns";
