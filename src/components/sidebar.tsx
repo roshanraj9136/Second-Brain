@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Plus, Trash2, FileText, Search, Folder, FolderOpen, LayoutGrid, Settings, ChevronRight, ChevronDown, Sun, Moon, AlertCircle } from "lucide-react";
+import { Plus, Trash2, FileText, Search, Folder, FolderOpen, LayoutGrid, Settings, ChevronRight, ChevronDown, AlertCircle, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { isToday, isYesterday } from "date-fns";
@@ -24,6 +24,8 @@ interface SidebarProps {
   onCreateFolder: (name: string) => void;
   onDeleteFolder: (name: string) => void;
   user: any;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 export default function Sidebar({
@@ -37,13 +39,22 @@ export default function Sidebar({
   customFolders,
   onCreateFolder,
   onDeleteFolder,
-  user
+  user,
+  isOpen,
+  onClose
 }: SidebarProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [isFolderOpen, setIsFolderOpen] = useState(true);
   const [newFolderName, setNewFolderName] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const { setTheme } = useTheme();
+
+  const handleNoteClick = (note: any) => {
+    onSelectNote(note);
+    if (window.innerWidth < 768) {
+        onClose();
+    }
+  };
 
   const getTitle = (content: any) => {
     try {
@@ -91,7 +102,7 @@ export default function Sidebar({
             ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-semibold shadow-sm border-zinc-200 dark:border-zinc-700" 
             : "border-transparent text-zinc-600 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 dark:text-zinc-400"
         )}
-        onClick={() => onSelectNote(note)}
+        onClick={() => handleNoteClick(note)}
       >
         <div className="flex items-center gap-3 overflow-hidden pointer-events-none">
           <FileText className={cn("w-4 h-4 flex-shrink-0 transition-colors", selectedNote?.id === note.id ? "text-purple-600" : "text-zinc-400")} />
@@ -136,18 +147,34 @@ export default function Sidebar({
   };
 
   return (
-    <div className="w-80 border-r border-zinc-200 dark:border-zinc-800 h-screen flex flex-col bg-zinc-50/80 dark:bg-black backdrop-blur-xl flex-shrink-0">
+    <>
+    {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm transition-opacity"
+          onClick={onClose}
+        />
+    )}
+
+    <div className={cn(
+        "fixed inset-y-0 left-0 z-50 w-80 border-r border-zinc-200 dark:border-zinc-800 h-[100dvh] flex flex-col bg-zinc-50/95 dark:bg-black/95 backdrop-blur-xl transition-transform duration-300 md:relative md:translate-x-0 shadow-2xl md:shadow-none",
+        isOpen ? "translate-x-0" : "-translate-x-full"
+    )}>
       
       <div className="p-6 space-y-6 flex-shrink-0">
-        <div className="flex items-center gap-3 font-bold text-xl tracking-tight px-1 text-zinc-800 dark:text-zinc-100">
-           <div className="w-8 h-8 bg-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20">
-             <span className="text-white text-lg">⚡</span>
-           </div>
-           Second Brain
+        <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3 font-bold text-xl tracking-tight px-1 text-zinc-800 dark:text-zinc-100">
+            <div className="w-8 h-8 bg-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20">
+                <span className="text-white text-lg">⚡</span>
+            </div>
+            Second Brain
+            </div>
+            <Button variant="ghost" size="icon" className="md:hidden text-zinc-500" onClick={onClose}>
+                <X className="w-6 h-6" />
+            </Button>
         </div>
 
         <Button 
-          onClick={onCreateNew} 
+          onClick={() => { onCreateNew(); if(window.innerWidth < 768) onClose(); }} 
           className="w-full justify-start gap-3 h-14 text-lg font-medium bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 shadow-xl shadow-zinc-500/10 rounded-2xl transition-all hover:-translate-y-0.5 cursor-pointer" 
         >
           <Plus className="w-6 h-6" />
@@ -209,7 +236,7 @@ export default function Sidebar({
             {isFolderOpen && (
               <div className="space-y-1">
                 <button 
-                  onClick={() => onFolderChange("All Notes")}
+                  onClick={() => { onFolderChange("All Notes"); if(window.innerWidth < 768) onClose(); }}
                   className={cn(
                     "w-full flex items-center gap-3 px-4 py-3 text-[16px] font-medium rounded-xl transition-all duration-200 cursor-pointer",
                     activeFolder === "All Notes" 
@@ -230,7 +257,7 @@ export default function Sidebar({
                         ? "bg-white dark:bg-zinc-800 shadow-sm border border-zinc-200 dark:border-zinc-700" 
                         : "hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50"
                     )}
-                    onClick={() => onFolderChange(folder)}
+                    onClick={() => { onFolderChange(folder); if(window.innerWidth < 768) onClose(); }}
                   >
                     <div className="flex items-center gap-3 min-w-0">
                         {activeFolder === folder ? (
@@ -354,7 +381,7 @@ export default function Sidebar({
               <div className="flex items-center justify-between p-4 rounded-lg border border-zinc-200 dark:border-zinc-800">
                 <div className="space-y-0.5">
                   <div className="text-sm font-medium">App Version</div>
-                  <div className="text-xs text-zinc-500">Pro v1.1.2</div>
+                  <div className="text-xs text-zinc-500">Pro v2.0 Mobile</div>
                 </div>
                 <Button variant="secondary" disabled>Up to date</Button>
               </div>
@@ -364,5 +391,6 @@ export default function Sidebar({
       </div>
 
     </div>
+    </>
   );
 }
