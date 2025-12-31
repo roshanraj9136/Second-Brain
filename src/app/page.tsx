@@ -8,6 +8,7 @@ import Dashboard from "@/components/dashboard";
 import { CommandMenu } from "@/components/command-menu";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function Home() {
   const [notes, setNotes] = useState<any[]>([]);
@@ -129,18 +130,16 @@ export default function Home() {
       />
       
       <div className="flex-1 h-screen overflow-hidden relative flex flex-col">
-        {(!isDesktopSidebarOpen || typeof window !== 'undefined' && window.innerWidth < 768) && (
-          <div className="absolute top-4 left-4 z-30">
-              <Button 
-                  variant="outline" 
-                  size="icon" 
-                  className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md shadow-sm rounded-full h-10 w-10 border-zinc-200 dark:border-zinc-800"
-                  onClick={handleToggle}
-              >
-                  <Menu className="w-5 h-5 text-zinc-700 dark:text-zinc-300" />
-              </Button>
-          </div>
-        )}
+        <div className={cn("absolute top-4 left-4 z-30", isDesktopSidebarOpen ? "md:hidden" : "block")}>
+            <Button 
+                variant="outline" 
+                size="icon" 
+                className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md shadow-sm rounded-full h-10 w-10 border-zinc-200 dark:border-zinc-800"
+                onClick={handleToggle}
+            >
+                <Menu className="w-5 h-5 text-zinc-700 dark:text-zinc-300" />
+            </Button>
+        </div>
 
         {!selectedNote && !isNewNote ? (
           <Dashboard 
